@@ -1,0 +1,12 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+<BaseLayout title="Contact" description="Entrer en contact" lang="fr">
+  <h1 class="text-3xl font-bold">Contact</h1>
+  <form class="mt-6 max-w-xl space-y-4">
+    <input class="w-full rounded-lg border p-3" placeholder="Votre nom" />
+    <input class="w-full rounded-lg border p-3" placeholder="Email" type="email" />
+    <textarea class="w-full rounded-lg border p-3" placeholder="Message" rows="5"></textarea>
+    <button class="rounded-lg bg-blue-600 px-5 py-3 text-white hover:bg-blue-700" type="button">Envoyer</button>
+  </form>
+</BaseLayout>

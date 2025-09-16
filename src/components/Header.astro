@@ -1,0 +1,119 @@
+---
+export interface Props {
+  lang?: string;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+
+// Labels per language
+const labelsByLang = {
+  en: {
+    home: 'About Us',
+    team: 'Our Team',
+    services: 'Our Services',
+    localization: 'Localization',
+    contact: 'Contact Us',
+    switchEN: 'EN', switchFR: 'FR'
+  },
+  fr: {
+    home: 'Accueil',
+    team: 'Notre équipe',
+    services: 'Nos services',
+    localization: 'Localisation',
+    contact: 'Contactez-nous',
+    switchEN: 'EN', switchFR: 'FR'
+  }
+} as const;
+
+const labels = labelsByLang[lang] ?? labelsByLang.en;
+
+// URL prefix for language ('' for en, '/fr' for others)
+const prefix = lang === 'en' ? '' : `/${lang}`;
+
+// Current path
+const currentPath = Astro.url.pathname;
+
+// Helper to mark active links
+const linkClass = (path: string) =>
+  `${currentPath === path || (path !== "/" && currentPath.startsWith(path)) 
+    ? "text-blue-600 font-semibold border-b-2 border-blue-600" 
+    : "text-gray-700 hover:text-black"} text-sm px-1 py-0.5`;
+---
+
+<header class="border-b bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+  <!-- Top bar -->
+  <div class="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
+    <!-- Logo -->
+    <a href={prefix || '/'}>
+      <img src="/images/progisud-logo.jpg" alt="Progisud Logo" class="h-10 md:h-12 lg:h-16 w-auto" />
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex items-center gap-6">
+      <a class={linkClass(`${prefix}/`)} href={prefix || '/'}>{labels.home}</a>
+      <a class={linkClass(`${prefix}/our-team`)} href={`${prefix}/our-team`}>{labels.team}</a>
+      <a class={linkClass(`${prefix}/our-services`)} href={`${prefix}/our-services`}>{labels.services}</a>
+      <a class={linkClass(`${prefix}/localization`)} href={`${prefix}/localization`}>{labels.localization}</a>
+      <a class={linkClass(`${prefix}/contact-us`)} href={`${prefix}/contact-us`}>{labels.contact}</a>
+
+      <span class="mx-2 h-4 w-px bg-gray-300"></span>
+      <a class="text-sm text-gray-700 hover:text-black" href="/"> {labels.switchEN} </a>
+      <a class="text-sm text-gray-700 hover:text-black" href="/fr/"> {labels.switchFR} </a>
+    </nav>
+
+    <!-- Mobile toggle -->
+    <button
+      id="mobile-nav-toggle"
+      class="md:hidden inline-flex items-center justify-center rounded-lg border px-3 py-2"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      aria-label="Toggle menu"
+    >
+      <span class="block h-0.5 w-5 bg-gray-900 transition-all"></span>
+      <span class="block h-0.5 w-5 my-1 bg-gray-900 transition-opacity"></span>
+      <span class="block h-0.5 w-5 bg-gray-900 transition-all"></span>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div
+    id="mobile-menu"
+    class="md:hidden origin-top overflow-hidden max-h-0 opacity-0 transition-all duration-300"
+  >
+    <nav class="px-4 pb-4 flex flex-col gap-3">
+      <a class={linkClass(`${prefix}/`)} href={prefix || '/'}>{labels.home}</a>
+      <a class={linkClass(`${prefix}/our-team`)} href={`${prefix}/our-team`}>{labels.team}</a>
+      <a class={linkClass(`${prefix}/our-services`)} href={`${prefix}/our-services`}>{labels.services}</a>
+      <a class={linkClass(`${prefix}/localization`)} href={`${prefix}/localization`}>{labels.localization}</a>
+      <a class={linkClass(`${prefix}/contact-us`)} href={`${prefix}/contact-us`}>{labels.contact}</a>
+
+      <div class="mt-2 flex items-center gap-4 pt-2 border-t">
+        <a class="text-sm" href="/"> {labels.switchEN} </a>
+        <a class="text-sm" href="/fr/"> {labels.switchFR} </a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Toggle script -->
+  <script is:inline>
+    const btn = document.getElementById('mobile-nav-toggle');
+    const panel = document.getElementById('mobile-menu');
+    if (btn && panel) {
+      btn.addEventListener('click', () => {
+        const open = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+        panel.classList.toggle('max-h-0', open);
+        panel.classList.toggle('opacity-0', open);
+        panel.classList.toggle('max-h-96', !open);
+        panel.classList.toggle('opacity-100', !open);
+
+        const bars = btn.querySelectorAll('span');
+        bars[0].classList.toggle('rotate-45', !open);
+        bars[0].classList.toggle('translate-y-[3px]', !open);
+        bars[1].classList.toggle('opacity-0', !open);
+        bars[2].classList.toggle('-rotate-45', !open);
+        bars[2].classList.toggle('-translate-y-[3px]', !open);
+      });
+    }
+  </script>
+</header>
