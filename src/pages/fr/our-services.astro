@@ -1,20 +1,219 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
-<BaseLayout title="Nos services" description="Ce que nous proposons" lang="fr">
-  <h1 class="text-3xl font-bold">Nos services</h1>
-  <div class="mt-6 grid gap-6 md:grid-cols-3">
-    <div class="rounded-xl border bg-white p-6">
-      <h3 class="font-semibold">Conseil</h3>
-      <p class="text-sm text-gray-600">Stratégie, cadrage et conception de solutions.</p>
+<BaseLayout title="Nos Services" description="What we offer" lang="en">
+  <!-- HERO -->
+  <section class="relative h-[28rem] overflow-hidden">
+    <!-- Static background image -->
+    <img
+      src="/images/services/services-01.png"
+      alt=""
+      class="absolute inset-0 w-full h-full object-cover"
+      loading="lazy"
+    />
+
+    <!-- Gray overlay -->
+    <div class="absolute inset-0 bg-gradient-to-r from-gray-900/70 via-gray-800/70 to-transparent mix-blend-multiply"></div>
+
+    <!-- Text (flies in) -->
+    <div class="relative z-10 mx-auto max-w-6xl px-4 md:px-8 h-full flex flex-col justify-center">
+      <h3 data-fly data-delay="0.05s" class="text-2xl md:text-3xl font-bold text-white">
+        Votre partenaire SAP  pour  naviguer vers l'excellence digitale grâce aux services SAP innvovants
+      </h3>
     </div>
-    <div class="rounded-xl border bg-white p-6">
-      <h3 class="font-semibold">Développement</h3>
-      <p class="text-sm text-gray-600">Sites et applications construits selon les bonnes pratiques.</p>
+  </section>
+
+  <div class="mx-auto max-w-3xl text-center mt-16 space-y-12">
+    <section data-reveal>
+      <h1
+          data-fly
+          data-delay="0.1s"
+          class="text-3xl md:text-3xl font-extrabold text-gray-900 tracking-tight mb-10"
+        >
+          Accompagner votre Business Transformation 
+      </h1>
+      <p class="mt-4 text-gray-700 text-base md:text-lg leading-relaxed" data-reveal>
+        Adopter l'innovation continue et  gagner en compétitivité grâce aux fonctionnalités avancées de SAP PUBLIC CLOUD, 
+        SAP Business Technology Platform AI , SAP Signavio et SAP Joule
+      </p>
+    </section>
+  </div>
+
+  <section>
+    <div class="mx-auto max-w-6xl px-4 md:px-8 py-16 md:py-20 text-center">
+      <!-- H1 -->
+      <h1
+        data-fly
+        data-delay="0.1s"
+        class="text-3xl md:text-3xl font-extrabold text-gray-900 tracking-tight mb-10"
+      >
+        Boostez votre entreprise grâce à nos services SAP spécialisés
+      </h1>
+
+      <!-- Grid of Services -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-left m-8">
+        <div data-fly data-delay="0.2s" class="text-gray-700 text-base md:text-lg leading-relaxed">
+          Expertise approfondie de SAP S/4 HANA Cloud Public Edition (fonctionnalités, développement et architecture)
+          <span class="italic">(Functional, Development, and Architecture)</span>
+        </div>
+
+        <div data-fly data-delay="0.3s" class="text-gray-700 text-base md:text-lg leading-relaxed">
+          Maîtrise avancée de SAP Integration Suite et Business Technology Platform (BTP) pour des intégrations robustes et évolutives
+        </div>
+
+        <div data-fly data-delay="0.4s" class="text-gray-700 text-base md:text-lg leading-relaxed">
+          SAP Business AI pour l'automatisation intelligente des processus et l'analyse prédictive
+        </div>
+
+        <div data-fly data-delay="0.5s" class="text-gray-700 text-base md:text-lg leading-relaxed">
+          Maîtrise de OneStream pour la gestion des performances d'entreprise, avec une solide connaissance de SQL, VB et des technologies connexes
+        </div>
+
+        <div data-fly data-delay="0.6s" class="text-gray-700 text-base md:text-lg leading-relaxed">
+          Expertise dans SAP Analytics Cloud (SAC) pour le reporting et la création de dashboard d'entreprise
+        </div>
+
+        <div data-fly data-delay="0.7s" class="text-gray-700 text-base md:text-lg leading-relaxed">
+          Expertise dans SAP BusinessObjects Data Services (BODS) pour l'ETL et la transformation des données
+        </div>
+      </div>
     </div>
-    <div class="rounded-xl border bg-white p-6">
-      <h3 class="font-semibold">Support</h3>
-      <p class="text-sm text-gray-600">Plans de maintenance et améliorations continues.</p>
+  </section>
+
+  <section>
+    <div class="mx-auto max-w-6xl px-4 md:px-8 pt-6 md:pt-10 pb-0 md:pb-0 text-center">
+      <h2
+        data-fly
+        data-delay="0.1s"
+        class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight mb-12"
+      >
+        Domaines d'expertise
+      </h2>
+
+  <!-- Expertise Grid -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-0 [&>div]:relative">
+    
+    <!-- Item -->
+    <div data-fly data-delay="0.2s" class="flex flex-col items-center text-center h-full">
+      <img src="/images/services/saplogo.png" alt="SAP S/4HANA"
+          class="w-24 h-24 object-contain mx-auto" />
+      <span class="mt-2 text-gray-700 text-base font-medium">
+        SAP S/4HANA Public Edition<br/> SAP Business AI<br/> SAP HANA 2.0
+      </span>
+    </div>
+
+    <div data-fly data-delay="0.4s" 
+        class="flex flex-col items-center text-center h-full 
+                md:before:absolute md:before:top-1/4 md:before:bottom-1/4 
+                md:before:left-0 md:before:w-px md:before:bg-gray-300">
+      <img src="/images/services/onestreamlogo.png" alt="Onestream"
+          class="w-25 h-24 object-contain mx-auto" />
+      <span class="mt-2 text-gray-700 text-base font-medium">Onestream</span>
+    </div>
+
+    <div data-fly data-delay="0.5s" 
+        class="flex flex-col items-center text-center h-full 
+                md:before:absolute md:before:top-1/4 md:before:bottom-1/4 
+                md:before:left-0 md:before:w-px md:before:bg-gray-300">
+      <img src="/images/services/snowflakelogo.png" alt="Snowflake"
+          class="w-25 h-24 object-contain mx-auto" />
+      <span class="mt-2 text-gray-700 text-base font-medium">Snowflake</span>
+    </div>
+
+    <div data-fly data-delay="0.7s" 
+        class="flex flex-col items-center text-center h-full 
+                md:before:absolute md:before:top-1/4 md:before:bottom-1/4 
+                md:before:left-0 md:before:w-px md:before:bg-gray-300">
+      <img src="/images/services/bodslogo.png" alt="BODS"
+          class="w-24 h-24 object-contain mx-auto" />
+      <span class="mt-2 text-gray-700 text-base font-medium">BODS</span>
     </div>
   </div>
+
+  <section 
+    class="mt-16 relative left-1/2 right-1/2 -mx-[50vw] w-screen bg-gray-100 py-32"
+  >
+    <div class="mx-auto max-w-6xl px-4 md:px-8 text-center">
+      <div class="grid gap-12 md:grid-cols-3">
+        
+        <!-- IT Solutions -->
+        <div data-fade class="flex flex-col items-center text-center">
+          <!-- Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" 
+              class="w-10 h-10 text-blue-600 mb-4" 
+              fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M12 3L4 9v12h16V9l-8-6z" />
+          </svg>
+
+          <h3 class="text-xl font-semibold text-blue-700 mb-2">Solutions IT</h3>
+          <p class="text-gray-700">
+            SAP S/4HANA Public Edition, SAP S/4HANA Private Edition, SAP ECC, SAP HANA 2.0,
+            SAC BI BW, Onestream, Snowflake, BODS
+          </p>
+        </div>
+
+        <!-- RUN - AMS -->
+        <div data-fade class="flex flex-col items-center text-center">
+          <!-- Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" 
+              class="w-10 h-10 text-blue-600 mb-4" 
+              fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+
+          <h3 class="text-xl font-semibold text-blue-700 mb-2">Maintenance - Support</h3>
+          <p class="text-gray-700">
+            Maintenance applicative de vos solutions SAP en proposant un  support de Niveau 1 à 3
+          </p>
+        </div>
+
+        <!-- Typology Of Mission -->
+        <div data-fade class="flex flex-col items-center text-center">
+          <!-- Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" 
+              class="w-10 h-10 text-blue-600 mb-4" 
+              fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M3 12h18M3 6h18M3 18h18" />
+          </svg>
+
+          <h3 class="text-xl font-semibold text-blue-700 mb-2">Typologie des missions</h3>
+          <p class="text-gray-700">
+            Project, TMA, Expertise, Audit, AMOA, MOE
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Inline JS -->
+  <script is:inline>
+    // Respect "Reduce Motion"
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const flyEls = document.querySelectorAll('[data-fly]');
+
+    if (!prefersReduced && 'IntersectionObserver' in window) {
+      // Initial state
+      flyEls.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(18px)';
+        el.style.transitionProperty = 'opacity, transform';
+        el.style.transitionDuration = '600ms';
+        el.style.transitionTimingFunction = 'ease';
+        const delay = el.getAttribute('data-delay') || '0s';
+        el.style.transitionDelay = delay;
+      });
+
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(({ isIntersecting, target }) => {
+          if (!isIntersecting) return;
+          target.style.opacity = '1';
+          target.style.transform = 'translateY(0)';
+          io.unobserve(target);
+        });
+      }, { threshold: 0.15 });
+
+      flyEls.forEach(el => io.observe(el));
+    }
+  </script>
 </BaseLayout>

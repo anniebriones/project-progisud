@@ -1,15 +1,16 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+import WorldMapPins from '../components/WorldMapPins.astro';
 ---
 <BaseLayout title="Localization" description="Localization" lang="en">
-  <!-- Localizations -->
-  <section class="w-full bg-white">
-    <div class="mx-auto max-w-6xl px-4 md:px-8 py-16 space-y-16">
-      <!-- Heading -->
-      <h2 data-fly class="text-3xl font-bold text-center">Our Locations</h2>
 
-      <!-- Marseille -->
-      <div class="grid gap-8 md:grid-cols-2 items-start">
+  <!-- Localizations -->
+  <section class="w-full bg-white mb-16 py-8 px-8">
+    <h2 data-fly class="text-3xl font-bold text-center">Our Locations</h2>
+    <WorldMapPins imageSrc="/images/localization/worldmap.png" title="Our global offices" />
+
+    <div class="grid gap-8 md:grid-cols-2 items-start">
         <!-- Map (left) -->
         <div class="aspect-[16/10] md:aspect-[4/3] w-full overflow-hidden rounded-xl shadow-sm">
           <iframe
@@ -36,7 +37,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       </div>
 
       <!-- Manila -->
-      <div class="grid gap-8 md:grid-cols-2 items-start">
+      <div class="grid gap-8 md:grid-cols-2 items-start mt-10">
         <!-- Map (left) -->
         <div class="aspect-[16/10] md:aspect-[4/3] w-full overflow-hidden rounded-xl shadow-sm">
           <iframe
@@ -44,7 +45,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             class="w-full h-full"
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"
-            src="https://www.google.com/maps?q=41%2FF%20Pioneer%20West%20Highlands%20Tower%20II%2C%20Madison%20St.%2C%20Mandaluyong%20City%2C%20Philippines&output=embed">
+            src="https://www.google.com/maps?q=10th%20Floor%2C%20South%20Tower%20Rockwell%20Business%20Center%2C%20Sheridan%2C%20Mandaluyong%20City%2C%20Philippines&output=embed">
           </iframe>
         </div>
 
@@ -55,13 +56,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <a href="mailto:contact@progisud.com" class="text-blue-600 hover:underline">contact@progisud.com</a>
           </p>
           <p class="mt-4 text-gray-700 leading-relaxed">
-            41/F Pioneer West Highlands Tower II,<br/>
-            Madison St., Mandaluyong City<br/>
+            10th Floor <br/>South Tower Rockwell Business Center,<br/>
+            Sheridan, Mandaluyong City<br/>
             Philippines
           </p>
         </div>
       </div>
-    </div>
-  </section>
 
+      </div>
+  </section>
 </BaseLayout>

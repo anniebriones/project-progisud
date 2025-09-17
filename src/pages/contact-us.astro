@@ -4,131 +4,119 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
 <BaseLayout title="Contact Us" description="Get in touch" lang="en">
   <h1 class="text-3xl font-bold">Contact Us</h1>
+  <p class="mt-4">Drop a message to our team to see how we can help you</p>
 
-  <form id="contactForm" class="mt-6 max-w-xl space-y-4 mb-10">
+  <form id="contactForm" class="mt-6 max-w-xl space-y-4 mb-10" autocomplete="off">
     <!-- First & Last Name -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
-        <input 
-          class="w-full rounded-lg border p-3" 
-          placeholder="First Name *" 
-          name="firstName" 
-          required
-        />
+        <input class="w-full rounded-lg border p-3" placeholder="First Name *" name="firstName" required />
         <p class="text-red-500 text-sm hidden">First name is required.</p>
       </div>
       <div>
-        <input 
-          class="w-full rounded-lg border p-3" 
-          placeholder="Last Name *" 
-          name="lastName" 
-          required
-        />
+        <input class="w-full rounded-lg border p-3" placeholder="Last Name *" name="lastName" required />
         <p class="text-red-500 text-sm hidden">Last name is required.</p>
       </div>
     </div>
 
     <!-- Email -->
     <div>
-      <input 
-        class="w-full rounded-lg border p-3" 
-        placeholder="Email *" 
-        type="email" 
-        name="email" 
-        required
-      />
+      <input class="w-full rounded-lg border p-3" placeholder="Email *" type="email" name="email" required />
       <p class="text-red-500 text-sm hidden">Valid email is required.</p>
     </div>
 
     <!-- Phone Number -->
-    <input 
-      class="w-full rounded-lg border p-3" 
-      placeholder="Phone Number" 
-      type="tel" 
-      name="phone"
-    />
+    <input class="w-full rounded-lg border p-3" placeholder="Phone Number" type="tel" name="phone" />
 
     <!-- Company Name -->
-    <input 
-      class="w-full rounded-lg border p-3" 
-      placeholder="Company Name" 
-      name="company"
-    />
+    <input class="w-full rounded-lg border p-3" placeholder="Company Name" name="company" />
 
     <!-- Message -->
     <div>
-      <textarea 
-        class="w-full rounded-lg border p-3" 
-        placeholder="Message *" 
-        rows="5" 
-        name="message" 
-        required
-      ></textarea>
+      <textarea class="w-full rounded-lg border p-3" placeholder="Message *" rows="9" name="message" required></textarea>
       <p class="text-red-500 text-sm hidden">Message is required.</p>
     </div>
 
+    <!-- Honeypot (hidden from users, attractive to bots) -->
+    <div class="absolute left-[-9999px]" aria-hidden="true">
+      <label>Website
+        <input
+          type="text"
+          name="website"
+          tabindex="-1"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+        />
+      </label>
+    </div>
+
     <!-- Submit Button -->
-    <button 
-      class="rounded-lg bg-blue-600 px-5 py-3 text-white hover:bg-blue-700" 
-      type="submit"
-    >
+    <button class="rounded-lg bg-blue-600 px-5 py-3 text-white hover:bg-blue-700" type="submit">
       Send
     </button>
   </form>
 
-  <!-- Validation + EmailJS Script -->
   <script is:inline>
     document.addEventListener("DOMContentLoaded", () => {
       const form = document.getElementById("contactForm");
+      const btn = form.querySelector('button[type="submit"]');
+      const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        // 🕵️ Honeypot check (bots often fill this)
+        if (form.website && form.website.value) {
+          // Silently succeed to avoid tipping off bots
+          form.reset();
+          return;
+        }
+
+        // quick validation
         let valid = true;
         const fields = form.querySelectorAll("[required]");
-        
         fields.forEach((field) => {
-          const errorMsg = field.nextElementSibling;
-          if (!field.value.trim() || (field.type === "email" && !field.value.includes("@"))) {
-            field.classList.add("border-red-500");
-            if (errorMsg) errorMsg.classList.remove("hidden");
-            valid = false;
-          } else {
-            field.classList.remove("border-red-500");
-            if (errorMsg) errorMsg.classList.add("hidden");
-          }
+          const bad = !field.value.trim() || (field.type === "email" && !isEmail(field.value));
+          field.classList.toggle("border-red-500", bad);
+          const msg = field.nextElementSibling;
+          if (msg) msg.classList.toggle("hidden", !bad);
+          if (bad) valid = false;
         });
-
         if (!valid) return;
 
-        // 🔹 EmailJS integration
+        btn.disabled = true;
+
         try {
-          // Replace with your EmailJS credentials
-          const serviceID = "your_service_id";
-          const templateID = "your_template_id";
-          const publicKey = "your_public_key";
+          const res = await fetch("/api/contact", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              firstName: form.firstName.value,
+              lastName: form.lastName.value,
+              email: form.email.value,
+              phone: form.phone.value || "",
+              company: form.company.value || "",
+              message: form.message.value,
+              // include honeypot for server validation too
+              website: form.website ? form.website.value : ""
+            }),
+          });
 
-          const templateParams = {
-            firstName: form.firstName.value,
-            lastName: form.lastName.value,
-            email: form.email.value,
-            phone: form.phone.value,
-            company: form.company.value,
-            message: form.message.value,
-          };
-
-          const response = await emailjs.send(serviceID, templateID, templateParams, publicKey);
-
-          alert("Message sent successfully!");
-          form.reset();
+          const data = await res.json();
+          if (data.ok) {
+            alert("Message sent!");
+            form.reset();
+          } else {
+            alert("Failed to send. " + (data.error || ""));
+          }
         } catch (err) {
-          alert("Failed to send message. Please try again later.");
           console.error(err);
+          alert("Failed to send. Please try again later.");
+        } finally {
+          btn.disabled = false;
         }
       });
     });
   </script>
-
-  <!-- Load EmailJS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </BaseLayout>

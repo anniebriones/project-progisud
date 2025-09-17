@@ -1,11 +1,11 @@
 ---
-export interface Props {
-  lang?: string;
-}
+/** Force language from URL only (no props) */
+const path = Astro.url.pathname;
+const paramLang = (Astro.params?.lang as string | undefined);
+const detectedLang = paramLang ?? (path.split('/')[1] || 'en');
+const lang: 'en' | 'fr' = (detectedLang === 'fr' ? 'fr' : 'en');
 
-const { lang = 'en' } = Astro.props as Props;
-
-// Labels per language
+/* Labels per language */
 const labelsByLang = {
   en: {
     home: 'About Us',
@@ -25,40 +25,72 @@ const labelsByLang = {
   }
 } as const;
 
-const labels = labelsByLang[lang] ?? labelsByLang.en;
+const labels = labelsByLang[lang];
 
-// URL prefix for language ('' for en, '/fr' for others)
+/* URL prefix for language ('' for en, '/fr' for others) */
 const prefix = lang === 'en' ? '' : `/${lang}`;
 
-// Current path
-const currentPath = Astro.url.pathname;
+/* Current path + helpers */
+const currentPath = path;
 
-// Helper to mark active links
-const linkClass = (path: string) =>
-  `${currentPath === path || (path !== "/" && currentPath.startsWith(path)) 
-    ? "text-blue-600 font-semibold border-b-2 border-blue-600" 
+// Normalize to NO trailing slash (except root)
+const normalize = (s: string) => {
+  if (!s) return '/';
+  const noSlash = s.replace(/\/+$/, '');
+  return noSlash === '' ? '/' : noSlash;
+};
+
+const isHomeTarget = (t: string) => {
+  const n = normalize(t);
+  return n === '/' || n === '/fr';
+};
+
+/* Active link helper */
+const linkClass = (p: string) => {
+  const target = normalize(p);
+  const here = normalize(currentPath);
+
+  // Home is active only on exact match
+  const active = isHomeTarget(target)
+    ? (here === target)
+    // Other links: exact match OR subpath match (e.g., /fr/our-services/…)
+    : (here === target || here.startsWith(target + '/'));
+
+  return `${active
+    ? "text-blue-600 font-semibold border-b-2 border-blue-600"
     : "text-gray-700 hover:text-black"} text-sm px-1 py-0.5`;
+};
+
+/* Build language switch links that keep the same page */
+const toEN = currentPath.replace(/^\/fr(\/|$)/, '/');                     // '/fr/foo' -> '/foo', '/fr' -> '/'
+const toFR = currentPath.startsWith('/fr')                                 // already fr?
+  ? currentPath                                                             // keep as is
+  : (currentPath === '/' ? '/fr/' : `/fr${currentPath}`);                   // '/' -> '/fr/', '/foo' -> '/fr/foo'
+
+/* Home link convenience */
+const homeHref = prefix ? `${prefix}/` : '/';
 ---
 
 <header class="border-b bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
   <!-- Top bar -->
   <div class="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
     <!-- Logo -->
-    <a href={prefix || '/'}>
+    <a href={homeHref}>
       <img src="/images/progisud-logo.jpg" alt="Progisud Logo" class="h-10 md:h-12 lg:h-16 w-auto" />
     </a>
 
     <!-- Desktop nav -->
     <nav class="hidden md:flex items-center gap-6">
-      <a class={linkClass(`${prefix}/`)} href={prefix || '/'}>{labels.home}</a>
+      <a class={linkClass(homeHref)} href={homeHref}>{labels.home}</a>
       <a class={linkClass(`${prefix}/our-team`)} href={`${prefix}/our-team`}>{labels.team}</a>
       <a class={linkClass(`${prefix}/our-services`)} href={`${prefix}/our-services`}>{labels.services}</a>
       <a class={linkClass(`${prefix}/localization`)} href={`${prefix}/localization`}>{labels.localization}</a>
       <a class={linkClass(`${prefix}/contact-us`)} href={`${prefix}/contact-us`}>{labels.contact}</a>
 
       <span class="mx-2 h-4 w-px bg-gray-300"></span>
-      <a class="text-sm text-gray-700 hover:text-black" href="/"> {labels.switchEN} </a>
-      <a class="text-sm text-gray-700 hover:text-black" href="/fr/"> {labels.switchFR} </a>
+      <!-- Language switch keeps current page -->
+      <a class="text-sm text-gray-700 hover:text-black" href={toEN}>{labels.switchEN}</a>
+      <a class="text-sm text-gray-700 hover:text-black" href={toFR}>{labels.switchFR}</a>
     </nav>
 
     <!-- Mobile toggle -->
@@ -81,15 +113,16 @@ const linkClass = (path: string) =>
     class="md:hidden origin-top overflow-hidden max-h-0 opacity-0 transition-all duration-300"
   >
     <nav class="px-4 pb-4 flex flex-col gap-3">
-      <a class={linkClass(`${prefix}/`)} href={prefix || '/'}>{labels.home}</a>
+      <a class={linkClass(homeHref)} href={homeHref}>{labels.home}</a>
       <a class={linkClass(`${prefix}/our-team`)} href={`${prefix}/our-team`}>{labels.team}</a>
       <a class={linkClass(`${prefix}/our-services`)} href={`${prefix}/our-services`}>{labels.services}</a>
       <a class={linkClass(`${prefix}/localization`)} href={`${prefix}/localization`}>{labels.localization}</a>
       <a class={linkClass(`${prefix}/contact-us`)} href={`${prefix}/contact-us`}>{labels.contact}</a>
 
       <div class="mt-2 flex items-center gap-4 pt-2 border-t">
-        <a class="text-sm" href="/"> {labels.switchEN} </a>
-        <a class="text-sm" href="/fr/"> {labels.switchFR} </a>
+        <!-- Language switch keeps current page -->
+        <a class="text-sm" href={toEN}>{labels.switchEN}</a>
+        <a class="text-sm" href={toFR}>{labels.switchFR}</a>
       </div>
     </nav>
   </div>

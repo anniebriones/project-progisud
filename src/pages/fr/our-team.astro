@@ -1,20 +1,162 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
-<BaseLayout title="Notre équipe" description="Rencontrez l'équipe" lang="fr">
-  <h1 class="text-3xl font-bold">Notre équipe</h1>
-  <div class="mt-6 grid gap-6 md:grid-cols-3">
-    <div class="rounded-xl border bg-white p-6">
-      <h3 class="font-semibold">Jane Doe</h3>
-      <p class="text-sm text-gray-600">PDG</p>
+<BaseLayout title="Notre équipe" description="Our Team" lang="en">
+  <section class="w-full bg-gray-50 py-16">
+    <div class="container mx-auto flex flex-col md:flex-row items-center md:items-start gap-12 px-6">
+      
+      <!-- Left: Image -->
+      <div class="md:w-1/2 flex justify-center">
+        <img 
+          src="/images/ourteam/phmap.jpg" 
+          alt="Our Team" 
+          class="rounded-2xl shadow-lg w-full h-auto object-cover"
+        />
+      </div>
+
+      <!-- Right: Text -->
+      <div class="md:w-1/2">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Notre équipe</h2>
+        <p class="text-gray-600 mb-6 leading-relaxed">
+          Nous sommes un groupe de professionnels passionnés, déterminés à offrir des solutions innovantes et à créer un impact significatif pour nos clients. 
+          La diversité de nos expertises et notre esprit collaboratif nous permettent d’aborder les défis sous différents angles et d’obtenir les meilleurs résultats.
+        </p>
+
+        <ul class="space-y-3">
+          <li class="flex items-start gap-2 opacity-0 translate-x-[-20px] transition-all duration-700 whitespace-normal break-words" data-delay="0.2s">
+            <span class="text-sky-700">✔</span>
+            <span class="text-gray-700">
+              Delivery center basé à Manille (Philippines). <br />
+              Ressources Clés en France
+            </span>
+          </li>
+          <li class="flex items-start gap-2 opacity-0 translate-x-[-20px] transition-all duration-700 whitespace-normal break-words" data-delay="0.4s">
+            <span class="text-blue-200">✔</span>
+            <span class="text-gray-700">
+              Bureau à Manille pour améliorer la collaboration et renforcer la synergie entre les équipes IT
+            </span>
+          </li>
+          <li class="flex items-start gap-2 opacity-0 translate-x-[-20px] transition-all duration-700 whitespace-normal break-words" data-delay="0.6s">
+            <span class="text-blue-500">✔</span>
+            <span class="text-gray-700">
+              Nos collaborateurs sont autonomes, anglophones et sont disponibles pour voyager dans le monde entier, pour des durées allant de 5 jours à 6 mois
+( Design, Build, UAT, Support  GO Live...)
+            </span>
+          </li>
+          <li class="flex items-start gap-2 opacity-0 translate-x-[-20px] transition-all duration-700 whitespace-normal break-words" data-delay="0.8s">
+            <span class="text-blue-500">✔</span>
+            <span class="text-gray-700">
+              Team Leader — Il est votre interlocuteur privilégié, alliant expertise technique et  métier afin d'échanger avec vos équipes opérationnelles IT ou Business
+            </span>
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="rounded-xl border bg-white p-6">
-      <h3 class="font-semibold">John Smith</h3>
-      <p class="text-sm text-gray-600">Directeur technique</p>
+  </section>
+
+  <!-- Chrono Section -->
+  <section 
+    class="mt-16 relative left-1/2 right-1/2 -mx-[50vw] w-screen bg-sky-700 py-32"
+  >
+    <div class="mx-auto max-w-6xl px-4 md:px-8 text-center">
+      <div class="grid gap-12 sm:grid-cols-2 lg:grid-cols-4 
+                  lg:gap-0 lg:divide-x lg:divide-white/30 
+                  [&>div]:lg:px-8">
+        
+        <div>
+          <div class="text-5xl font-extrabold text-white counter" data-to="20" data-suffix="+">0+</div>
+          <p class="mt-2 text-white/90">Collaborateurs sur SAP S/4HANA Public Edition</p>
+        </div>
+
+        <div>
+          <div class="text-5xl font-extrabold text-white counter" data-to="4" data-suffix="+">0+</div>
+          <p class="mt-2 text-white/90">Projets sur SAP S/4HANA Public Edition</p>
+        </div>
+
+        <div>
+          <div class="text-5xl font-extrabold text-white counter" data-to="40" data-suffix="+">0+</div>
+          <p class="mt-2 text-white/90">Collaborateurs on SAP S/4HANA or SAP ECC</p>
+        </div>
+
+        <div>
+          <div class="text-5xl font-extrabold text-white counter" data-to="15" data-suffix="+">0+</div>
+          <p class="mt-2 text-white/90">Collaborateurs on Onestream; Snowflake, SAC, BI, BW ou  BODS</p>
+        </div>
+
+      </div>
     </div>
-    <div class="rounded-xl border bg-white p-6">
-      <h3 class="font-semibold">Alex Lee</h3>
-      <p class="text-sm text-gray-600">Directeur des opérations</p>
-    </div>
-  </div>
+  </section>
+
+
+  <!-- Inline JS -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const items = document.querySelectorAll("ul li");
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            const delay = el.getAttribute("data-delay") || "0s";
+            el.style.transitionDelay = delay;
+            el.classList.remove("opacity-0", "translate-x-[-20px]");
+            el.classList.add("opacity-100", "translate-x-0");
+            observer.unobserve(el);
+          }
+        });
+      }, { threshold: 0.2 });
+
+      items.forEach((item) => observer.observe(item));
+    });
+
+    // Count-up with easing, prefixes/suffixes, and optional final override (e.g., "<1%")
+    const counters = document.querySelectorAll('.counter');
+    if ('IntersectionObserver' in window) {
+      const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+      const ci = new IntersectionObserver((entries) => {
+        entries.forEach(({ isIntersecting, target }) => {
+          if (!isIntersecting) return;
+
+          const end = parseFloat(target.getAttribute('data-to') || '0');
+          const dur = parseInt(target.getAttribute('data-duration') || '1000', 10);
+          const prefix = target.getAttribute('data-prefix') || '';
+          const suffix = target.getAttribute('data-suffix') || '';
+          const decimals = parseInt(target.getAttribute('data-decimals') || '0', 10);
+          const finalOverride = target.getAttribute('data-final-override');
+
+          const start = 0;
+          const startTime = performance.now();
+
+          function tick(now) {
+            const raw = Math.min(1, (now - startTime) / dur);
+            const p = easeOutCubic(raw);
+            const current = start + (end - start) * p;
+
+            let formatted = decimals > 0
+              ? current.toFixed(decimals)
+              : Math.floor(current).toString();
+
+            target.textContent = `${prefix}${formatted}${suffix}`;
+
+            if (raw < 1) {
+              requestAnimationFrame(tick);
+            } else {
+              // On completion, lock exact target — or use final override (e.g., "<1%")
+              if (finalOverride) {
+                target.textContent = finalOverride;
+              } else {
+                const endFormatted = decimals > 0 ? end.toFixed(decimals) : Math.floor(end).toString();
+                target.textContent = `${prefix}${endFormatted}${suffix}`;
+              }
+            }
+          }
+
+          requestAnimationFrame(tick);
+          ci.unobserve(target);
+        });
+      }, { threshold: 0.3 });
+
+      counters.forEach((c) => ci.observe(c));
+    }
+  </script>
 </BaseLayout>

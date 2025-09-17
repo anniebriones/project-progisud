@@ -1,12 +1,122 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
-<BaseLayout title="Contact" description="Entrer en contact" lang="fr">
-  <h1 class="text-3xl font-bold">Contact</h1>
-  <form class="mt-6 max-w-xl space-y-4">
-    <input class="w-full rounded-lg border p-3" placeholder="Votre nom" />
-    <input class="w-full rounded-lg border p-3" placeholder="Email" type="email" />
-    <textarea class="w-full rounded-lg border p-3" placeholder="Message" rows="5"></textarea>
-    <button class="rounded-lg bg-blue-600 px-5 py-3 text-white hover:bg-blue-700" type="button">Envoyer</button>
+
+<BaseLayout title="Contactez-nous" description="Get in touch" lang="en">
+  <h1 class="text-3xl font-bold">Contactez-nous</h1>
+  <p class="mt-4">Envoyez un message à notre équipe pour voir comment nous pouvons vous aider</p>
+
+  <form id="contactForm" class="mt-6 max-w-xl space-y-4 mb-10" autocomplete="off">
+    <!-- First & Last Name -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <input class="w-full rounded-lg border p-3" placeholder="Prénom *" name="firstName" required />
+        <p class="text-red-500 text-sm hidden">Le prénom est obligatoire.</p>
+      </div>
+      <div>
+        <input class="w-full rounded-lg border p-3" placeholder="Nom *" name="lastName" required />
+        <p class="text-red-500 text-sm hidden">Le nom de famille est obligatoire.</p>
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div>
+      <input class="w-full rounded-lg border p-3" placeholder="Email *" type="email" name="email" required />
+      <p class="text-red-500 text-sm hidden">Une adresse e-mail valide est obligatoire.</p>
+    </div>
+
+    <!-- Phone Number -->
+    <input class="w-full rounded-lg border p-3" placeholder="Téléphone" type="tel" name="phone" />
+
+    <!-- Company Name -->
+    <input class="w-full rounded-lg border p-3" placeholder="Entreprise" name="company" />
+
+    <!-- Message -->
+    <div>
+      <textarea class="w-full rounded-lg border p-3" placeholder="Message *" rows="9" name="message" required></textarea>
+      <p class="text-red-500 text-sm hidden">Message is required.</p>
+    </div>
+
+    <!-- Honeypot (hidden from users, attractive to bots) -->
+    <div class="absolute left-[-9999px]" aria-hidden="true">
+      <label>Website
+        <input
+          type="text"
+          name="website"
+          tabindex="-1"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+        />
+      </label>
+    </div>
+
+    <!-- Submit Button -->
+    <button class="rounded-lg bg-blue-600 px-5 py-3 text-white hover:bg-blue-700" type="submit">
+      Send
+    </button>
   </form>
+
+  <script is:inline>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("contactForm");
+      const btn = form.querySelector('button[type="submit"]');
+      const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // 🕵️ Honeypot check (bots often fill this)
+        if (form.website && form.website.value) {
+          // Silently succeed to avoid tipping off bots
+          form.reset();
+          return;
+        }
+
+        // quick validation
+        let valid = true;
+        const fields = form.querySelectorAll("[required]");
+        fields.forEach((field) => {
+          const bad = !field.value.trim() || (field.type === "email" && !isEmail(field.value));
+          field.classList.toggle("border-red-500", bad);
+          const msg = field.nextElementSibling;
+          if (msg) msg.classList.toggle("hidden", !bad);
+          if (bad) valid = false;
+        });
+        if (!valid) return;
+
+        btn.disabled = true;
+
+        try {
+          const res = await fetch("/api/contact", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              firstName: form.firstName.value,
+              lastName: form.lastName.value,
+              email: form.email.value,
+              phone: form.phone.value || "",
+              company: form.company.value || "",
+              message: form.message.value,
+              // include honeypot for server validation too
+              website: form.website ? form.website.value : ""
+            }),
+          });
+
+          const data = await res.json();
+          if (data.ok) {
+            alert("Message sent!");
+            form.reset();
+          } else {
+            alert("Failed to send. " + (data.error || ""));
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Failed to send. Please try again later.");
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    });
+  </script>
 </BaseLayout>
