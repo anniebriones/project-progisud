@@ -1,15 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-//import Seo from '~/components/Seo.astro';
 import Hreflang from '~/components/Hreflang.astro';
-//import { en, fr } from '~/content/seo';
-
-const site = import.meta.env.PUBLIC_SITE_URL || 'https://example.com';
-const meta = en.home;
-const alts = [
-  { lang: 'en', href: `${site}/` },
-  { lang: 'fr', href: `${site}/fr` }
-];
 
 const images = [
   "/images/about/01.png",
