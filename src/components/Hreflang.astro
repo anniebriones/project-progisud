@@ -1,0 +1,6 @@
+---
+export interface Alt { lang: string; href: string }
+const { alts = [], xDefault }: { alts?: Alt[]; xDefault?: string } = Astro.props;
+---
+{alts.map(a => <link rel="alternate" hreflang={a.lang} href={a.href} />)}
+{xDefault && <link rel="alternate" hreflang="x-default" href={xDefault} />}

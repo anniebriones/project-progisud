@@ -36,7 +36,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     const to = TEST_MODE
       ? ["annie.briones11@gmail.com"]
-      : ["EXT.GRANNOU@cma-cgm.com"];
+      : ["Contact@progisud.com"];
 
     const labels = ["First Name", "Last Name", "Email", "Phone", "Company", "Message"];
     const labelWidth = Math.max(...labels.map(l => l.length)) + 1; // + ":" 

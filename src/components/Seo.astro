@@ -1,35 +1,39 @@
 ---
 export interface Props {
-  title?: string;
-  description?: string;
-  image?: string;
-  lang?: string;
-  url?: string;
-  noIndex?: boolean;
+  title?: string; description?: string; image?: string;
+  canonicalUrl?: string; noindex?: boolean; type?: string;
+  twitter?: { site?: string; creator?: string }; locale?: string;
 }
-const {
-  title = 'My Astro Site',
-  description = 'Fast, content-first site built with Astro + Tailwind',
-  image = '/og-image.png',
-  lang = 'en',
-  url = Astro.url,
-  noIndex = false
-} = Astro.props as Props;
+const p = Astro.props;
+const site = import.meta.env.PUBLIC_SITE_URL || 'https://example.com';
+const canonical = p.canonicalUrl || Astro.url?.href || site + (Astro.url?.pathname || '/');
+const envIndexable = (import.meta.env.PUBLIC_SEO_INDEXABLE || '').toString().toLowerCase() === 'true';
+const robots = (p.noindex || !envIndexable) ? 'noindex, nofollow' : 'index, follow';
+const gsc = import.meta.env.PUBLIC_GSC_VERIFICATION;
+const ogType = p.type || 'website';
 ---
-<!-- Basic SEO + social cards -->
-<title>{title}</title>
-<meta name="description" content={description} />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="canonical" href={url} />
-{noIndex && <meta name="robots" content="noindex, nofollow" />}
+<title>{p.title ?? 'Website'}</title>
+{p.description && <meta name="description" content={p.description} />}
+<link rel="canonical" href={canonical} />
+<meta name="robots" content={robots}" />
+<meta name="googlebot" content={robots}" />
+{gsc && <meta name="google-site-verification" content={gsc} />}
 
-<!-- Open Graph / Twitter -->
-<meta property="og:title" content={title} />
-<meta property="og:description" content={description} />
-<meta property="og:image" content={image} />
-<meta property="og:type" content="website" />
-<meta property="og:url" content={url} />
+<meta property="og:type" content={ogType} />
+<meta property="og:url" content={canonical} />
+{p.title && <meta property="og:title" content={p.title} />}
+{p.description && <meta property="og:description" content={p.description} />}
+{p.image && <meta property="og:image" content={p.image} />}
+{p.locale && <meta property="og:locale" content={p.locale} />}
+
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content={title} />
-<meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={image} />
+{p.title && <meta name="twitter:title" content={p.title} />}
+{p.description && <meta name="twitter:description" content={p.description} />}
+{p.image && <meta name="twitter:image" content={p.image} />}
+{p.twitter?.site && <meta name="twitter:site" content={p.twitter.site} />}
+{p.twitter?.creator && <meta name="twitter:creator" content={p.twitter.creator} />}
+
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<slot name="extra" />
