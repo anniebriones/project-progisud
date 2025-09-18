@@ -1,7 +1,18 @@
 ---
 import Seo from "../components/Seo.astro";
+import JsonLd from '~/components/JsonLd.astro';
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import Analytics from '~/components/Analytics.astro';
+
+const site = import.meta.env.PUBLIC_SITE_URL || 'https://example.com';
+const orgLd = {
+  "@context":"https://schema.org",
+  "@type":"Organization",
+  "name":"Progisud",
+  "url": site,
+  "logo": `${site}/logo-512x512.png`
+};
 
 export interface Props {
   title?: string;
@@ -17,6 +28,7 @@ const {
   noIndex = false
 } = Astro.props as Props;
 ---
+
 <!doctype html>
 <html lang={lang} class="scroll-smooth">
   <head>
@@ -24,6 +36,7 @@ const {
     <Seo {title} {description} lang={lang} noIndex={noIndex} />
     <link rel="icon" href="images/progisud-logo.jpg" />
     <link rel="stylesheet" href="/fonts/inter.css" />
+    <JsonLd data={orgLd} />
   </head>
   <body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
     <Header lang={lang} />

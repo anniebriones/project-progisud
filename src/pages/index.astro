@@ -1,5 +1,15 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Seo from '~/components/Seo.astro';
+import Hreflang from '~/components/Hreflang.astro';
+import { en, fr } from '~/content/seo';
+
+const site = import.meta.env.PUBLIC_SITE_URL || 'https://example.com';
+const meta = en.home;
+const alts = [
+  { lang: 'en', href: `${site}/` },
+  { lang: 'fr', href: `${site}/fr` }
+];
 
 const images = [
   "/images/about/01.png",
@@ -15,6 +25,11 @@ const transitionMs = 600;  // slide animation duration (ms)
 ---
 
 <BaseLayout title="Home" description="Learn more about us" lang="en">
+  <head>
+    <Seo title={meta.title} description={meta.description} image={meta.image} locale="en" />
+    <Hreflang alts={alts} xDefault={`${site}/`} />
+  </head>
+
   <section class="relative h-[28rem] overflow-hidden">
     <!-- Static background image -->
     <img
