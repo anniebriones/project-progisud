@@ -30,9 +30,7 @@ export const POST: APIRoute = async ({ request }) => {
       website = "",
     } = body ?? {};
 
-    const from = TEST_MODE
-      ? "Acme <onboarding@resend.dev>"
-      : "Progisud <no-reply@progisuddigitalpartner.com>"; 
+    const from = "Progisud <no-reply@progisud-digital-partner.fr>"; 
 
     const to = TEST_MODE
       ? ["annie.briones11@gmail.com"]
