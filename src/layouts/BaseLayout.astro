@@ -1,9 +1,33 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import Analytics from '~/components/Analytics.astro';
+//import Analytics from '../components/Analytics.astro';
+import SeoHead from '../components/SeoHead.astro'
 
-const site = import.meta.env.PUBLIC_SITE_URL || 'https://example.com';
+// Keep your props shape
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  lang?: string;
+  noIndex?: boolean;
+}
+
+const {
+  title = "Progisud SAP Integration & Consulting services",
+  description = "Progisud is a SAP Tech Start-up, working on modern solutions like SAP PUBLIC CLOUD, Business AI, BTP Technologies… and expanding our expertise to the entire IT transformation.",
+  image = "/images/progisud-logo.jpg",
+  type = "website",
+  lang = "en",
+  noIndex = false
+} = Astro.props as Props;
+
+// Canonical + site
+const site = import.meta.env.PUBLIC_SITE_URL || Astro.site?.toString() || 'https://example.com';
+const canonical = new URL(Astro.url.pathname, site).toString();
+
+// JSON-LD (Organization + Website)
 const orgLd = {
   "@context":"https://schema.org",
   "@type":"Organization",
@@ -12,19 +36,17 @@ const orgLd = {
   "logo": `${site}/logo-512x512.png`
 };
 
-export interface Props {
-  title?: string;
-  description?: string;
-  lang?: string;
-  noIndex?: boolean;
-}
-
-const {
-  title = "Progisud Digital Partner",
-  description = "Your digital needs partner",
-  lang = "en",
-  noIndex = false
-} = Astro.props as Props;
+const webLd = {
+  "@context":"https://schema.org",
+  "@type":"WebSite",
+  "url": site,
+  "name":"Progisud Digital Partner",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": `${site}/search?q={search_term_string}`,
+    "query-input": "required name=search_term_string"
+  }
+};
 ---
 
 <!doctype html>
@@ -32,9 +54,21 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Progisud Digital Partner</title>
-    <link rel="icon" href="images/progisud-logo.jpg" />
+
+    <!-- Centralized SEO head -->
+    <SeoHead {title} {description} {image} {type} lang={lang} />
+
+    <!-- Robots & Canonical (SeoHead already emits canonical; meta robots complements it) -->
+    <meta name="robots" content={noIndex ? "noindex,nofollow" : "index,follow"} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Favicons / fonts -->
+    <link rel="icon" href="/images/progisud-logo.jpg" />
     <link rel="stylesheet" href="/fonts/inter.css" />
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">{JSON.stringify(orgLd)}</script>
+    <script type="application/ld+json">{JSON.stringify(webLd)}</script>
   </head>
   <body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
     <Header lang={lang} />
@@ -42,5 +76,8 @@ const {
       <slot />
     </main>
     <Footer />
+
+    <!-- Optional analytics -->
+    <!-- <Analytics /> -->
   </body>
 </html>

@@ -1,8 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+const title = 'Contact Us | Progisud'
+const description = 'Get in touch with Progisud for SAP integration and consulting services.'
+const image = '/images/progisud-logo.jpg'
 ---
 
-<BaseLayout title="Contact Us" description="Get in touch" lang="en">
+<BaseLayout {title} {description} {image} lang="en">
   <h1 class="text-3xl font-bold">Contact Us</h1>
   <p class="mt-4">Drop a message to our team to see how we can help you</p>
 

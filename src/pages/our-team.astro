@@ -1,8 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+const title = 'Our Team | Progisud'
+const description = 'Progisud is composed exclusively of SENIOR or EXPERT profiles based in France or in our Delivery Center in Manila, Philippines. This allows us to cover time slots on all continents.'
+const image = '/images/progisud-logo.jpg'
 ---
 
-<BaseLayout title="Our Team" description="Our Team" lang="en">
+<BaseLayout {title} {description} {image} lang="en">
   <section class="w-full bg-gray-50 py-16">
     <div class="container mx-auto flex flex-col md:flex-row items-center md:items-start gap-12 px-6">
       

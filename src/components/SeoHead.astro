@@ -1,0 +1,43 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  lang?: string;
+}
+
+const {
+  title = 'Progisud SAP Integration & Consulting services',
+  description = 'Progisud is a SAP Tech Start-up, working on modern solutions like SAP PUBLIC CLOUD, Business AI, BTP Technologies… and expanding our expertise to the entire IT transformation.',
+  image = 'https://yourdomain.com/og-default.jpg',
+  type = 'website',
+  lang = 'en',
+} = Astro.props;
+
+const canonical = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).toString()
+  : undefined;
+---
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>{title}</title>
+  <meta name="description" content={description} />
+
+  {canonical && <link rel="canonical" href={canonical} />}
+
+  <!-- Open Graph -->
+  <meta property="og:type" content={type} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={image} />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={image} />
+</head>
