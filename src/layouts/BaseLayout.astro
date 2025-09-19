@@ -1,14 +1,14 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-//import Analytics from '../components/Analytics.astro';
-import SeoHead from '../components/SeoHead.astro'
+// import Analytics from '../components/Analytics.astro';
+import SeoHead from '../components/SeoHead.astro';
 
-// Keep your props shape
+// Props
 export interface Props {
   title?: string;
   description?: string;
-  image?: string;
+  image?: string;                  // can be "/path.jpg" or full URL
   type?: 'website' | 'article';
   lang?: string;
   noIndex?: boolean;
@@ -17,33 +17,34 @@ export interface Props {
 const {
   title = "Progisud SAP Integration & Consulting services",
   description = "Progisud is a SAP Tech Start-up, working on modern solutions like SAP PUBLIC CLOUD, Business AI, BTP Technologies… and expanding our expertise to the entire IT transformation.",
-  image = "/images/progisud-logo.jpg",
+  image = "/images/progisud-logo.jpg", // will be converted to absolute below
   type = "website",
   lang = "en",
   noIndex = false
 } = Astro.props as Props;
 
-// Canonical + site
+// Site & helpers
 const site = import.meta.env.PUBLIC_SITE_URL || Astro.site?.toString() || 'https://example.com';
-const canonical = new URL(Astro.url.pathname, site).toString();
+const abs = (p: string) => new URL(p, site).toString();
+const resolvedImage = image?.startsWith('http') ? image : abs(image);
 
-// JSON-LD (Organization + Website)
+// JSON-LD (Organization + Website) — VALID because we stringify objects
 const orgLd = {
-  "@context":"https://schema.org",
-  "@type":"Organization",
-  "name":"Progisud",
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Progisud",
   "url": site,
-  "logo": `${site}/logo-512x512.png`
+  "logo": abs("/logo-512x512.png")
 };
 
 const webLd = {
-  "@context":"https://schema.org",
-  "@type":"WebSite",
+  "@context": "https://schema.org",
+  "@type": "WebSite",
   "url": site,
-  "name":"Progisud Digital Partner",
+  "name": "Progisud Digital Partner",
   "potentialAction": {
     "@type": "SearchAction",
-    "target": `${site}/search?q={search_term_string}`,
+    "target": abs("/search?q={search_term_string}"),
     "query-input": "required name=search_term_string"
   }
 };
@@ -55,20 +56,21 @@ const webLd = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Centralized SEO head -->
-    <SeoHead {title} {description} {image} {type} lang={lang} />
+    <!-- Centralized SEO head (builds title/description/OG/Twitter). -->
+    <!-- We pass resolvedImage to guarantee absolute URLs for social cards. -->
+    <SeoHead {title} {description} image={resolvedImage} {type} lang={lang} />
 
-    <!-- Robots & Canonical (SeoHead already emits canonical; meta robots complements it) -->
+    <!-- Robots -->
     <meta name="robots" content={noIndex ? "noindex,nofollow" : "index,follow"} />
-    <link rel="canonical" href={canonical} />
 
     <!-- Favicons / fonts -->
     <link rel="icon" href="/images/progisud-logo.jpg" />
     <link rel="stylesheet" href="/fonts/inter.css" />
 
-    <!-- JSON-LD -->
-    <script type="application/ld+json">{JSON.stringify(orgLd)}</script>
-    <script type="application/ld+json">{JSON.stringify(webLd)}</script>
+    <!-- JSON-LD (one script, array of items) -->
+    <script type="application/ld+json">
+      {JSON.stringify([orgLd, webLd])}
+    </script>
   </head>
   <body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
     <Header lang={lang} />
@@ -78,6 +80,8 @@ const webLd = {
     <Footer />
 
     <!-- Optional analytics -->
-    <!-- <Analytics /> -->
+    {/*
+    <Analytics />
+    */}
   </body>
 </html>
