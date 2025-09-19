@@ -10,11 +10,15 @@ const images = [
   "/images/about/02.png"
 ];
 
+const title = 'Progisud  Expertise et Conseils Métier  sur SAP'
+const description = 'Progisud est une Start-Up Tech sur SAP , travaillant sur des solutions modernes comme SAP PUBLIC CLOUD, Business AI, BTP Technologies… englobant l’nsemble de la transformation informatique.'
+const image = 'https://progisud-digital-partner.fr/images/progisud-logo.jpg'
+
 const perSlideSec = 4;     // seconds each slide is shown
 const transitionMs = 600;  // slide animation duration (ms)
 ---
 
-<BaseLayout title="À propos" description="Learn more about us" lang="en">
+<BaseLayout {title} {description} {image} lang="fr">
   <section class="relative h-[28rem] overflow-hidden">
     <!-- Static background image -->
     <img

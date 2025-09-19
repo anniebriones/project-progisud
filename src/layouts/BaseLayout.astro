@@ -23,31 +23,29 @@ const {
   noIndex = false
 } = Astro.props as Props;
 
-// Site & helpers
-const site = import.meta.env.PUBLIC_SITE_URL || Astro.site?.toString() || 'https://example.com';
+// --- Site & helpers ---
+const site =
+  import.meta.env.PUBLIC_SITE_URL ||
+  Astro.site?.toString() ||
+  'https://progisud-digital-partner.fr';
+
 const abs = (p: string) => new URL(p, site).toString();
 const resolvedImage = image?.startsWith('http') ? image : abs(image);
 
-// JSON-LD (Organization + Website)
-const orgLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Progisud",
-  "url": site,
-  "logo": abs("/logo-512x512.png")
-};
+// --- Hreflang (EN <-> FR) ---
+const currentPath = Astro.url.pathname;
 
-const webLd = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "url": site,
-  "name": "Progisud Digital Partner",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": abs("/search?q={search_term_string}"),
-    "query-input": "required name=search_term_string"
-  }
-};
+// Strip a leading "/fr" if present (first segment only)
+const basePath = currentPath.replace(/^\/fr(?=\/|$)/, '') || '/';
+
+// Build absolute EN/FR URLs
+const enUrl = abs(basePath);
+const frUrl = abs(basePath === '/' ? '/fr/' : `/fr${basePath}`);
+
+// OPTIONAL: Only output hreflang for routes that actually have FR pages live.
+// Add/remove paths here as you publish more FR pages.
+const translated = new Set<string>(['/', '/our-services', '/our-team', '/localization', '/contact-us']);
+const showHreflang = translated.has(basePath);
 ---
 
 <!doctype html>
@@ -56,18 +54,27 @@ const webLd = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Centralized SEO head (builds title/description/OG/Twitter). -->
-    <!-- We pass resolvedImage to guarantee absolute URLs for social cards. -->
+    <!-- Centralized SEO head (title/description/OG/Twitter).
+         Pass resolvedImage to guarantee absolute URLs for social cards. -->
     <SeoHead {title} {description} image={resolvedImage} {type} lang={lang} />
 
     <!-- Robots -->
     <meta name="robots" content={noIndex ? "noindex,nofollow" : "index,follow"} />
 
+    <!-- Hreflang alternates (emit only if FR counterpart exists) -->
+    {showHreflang && (
+      <>
+        <link rel="alternate" hreflang="en" href={enUrl} />
+        <link rel="alternate" hreflang="fr" href={frUrl} />
+        <link rel="alternate" hreflang="x-default" href={enUrl} />
+      </>
+    )}
+
     <!-- Favicons / fonts -->
     <link rel="icon" href="/images/progisud-logo.jpg" />
     <link rel="stylesheet" href="/fonts/inter.css" />
 
-    <!-- JSON-LD (one script, array of items) -->
+    <!-- JSON-LD (hardcoded, validated) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -77,7 +84,6 @@ const webLd = {
       "logo": "https://progisud-digital-partner.fr/logo-512x512.png"
     }
     </script>
-
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -99,7 +105,6 @@ const webLd = {
     </main>
     <Footer />
 
-    <!-- Optional analytics -->
     {/*
     <Analytics />
     */}

@@ -2,9 +2,12 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
 import WorldMapPins from '../../components/WorldMapPins.astro';
----
-<BaseLayout title="Nos Bureaux" description="Localization" lang="en">
 
+const title = 'Localisation'
+const description = '2 Bureaux en France et aux Philippines.'
+const image = 'https://progisud-digital-partner.fr/images/progisud-logo.jpg'
+---
+<BaseLayout {title} {description} {image} lang="fr">
   <!-- Localizations -->
   <section class="w-full bg-white mb-16 py-8 px-8">
     <h2 data-fly class="text-3xl font-bold text-center">Nos Bureaux</h2>
