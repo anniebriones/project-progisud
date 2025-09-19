@@ -28,7 +28,7 @@ const site = import.meta.env.PUBLIC_SITE_URL || Astro.site?.toString() || 'https
 const abs = (p: string) => new URL(p, site).toString();
 const resolvedImage = image?.startsWith('http') ? image : abs(image);
 
-// JSON-LD (Organization + Website) — VALID because we stringify objects
+// JSON-LD (Organization + Website)
 const orgLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -69,7 +69,7 @@ const webLd = {
 
     <!-- JSON-LD (one script, array of items) -->
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"Organization","name":"Progisud","url":"https://progisud-digital-partner.fr","logo":"https://progisud-digital-partner.fr/images/progisud-logo.jpg"}
+      {JSON.stringify([orgLd, webLd])}
     </script>
   </head>
   <body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
