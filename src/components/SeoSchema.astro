@@ -2,43 +2,39 @@
 interface Org {
   name?: string;
   url?: string;
-  logoUrl?: string;     // absolute
+  logoUrl?: string;
   logoW?: number;
   logoH?: number;
-  description?: string; // About Us
-  teamNotes?: string[]; // Our Team (descriptions only)
+  description?: string;        // About Us
+  teamNotes?: string[];        // Our Team (descriptions)
   services?: { name: string; description?: string }[]; // Our Services
   locations?: {
     name: string;
     streetAddress?: string;
     postalCode?: string;
     addressLocality?: string;
-    addressCountry?: string; // ISO code e.g., FR, PH
+    addressCountry?: string;   // ISO: FR, PH, etc.
     email?: string;
-  }[]; // Localization
-  contactEmail?: string; // Contact Us
+  }[];                          // Localization
+  contactEmail?: string;        // Contact Us
 }
 
 interface Page {
-  url: string;        // absolute URL of this page
+  url: string;                  // absolute
   pageType?: 'AboutPage' | 'ContactPage' | 'CollectionPage' | 'WebPage';
-  name?: string;      // page title
+  name?: string;
   description?: string;
 }
 
 interface Props {
   org: Org;
   page: Page;
-  includeWebsite?: boolean; // add WebSite for sitelinks (on every page is fine)
+  includeWebsite?: boolean;
 }
 
-const {
-  org,
-  page,
-  includeWebsite = true
-} = Astro.props as { org: Org; page: Page; includeWebsite?: boolean };
+const { org, page, includeWebsite = true } = Astro.props as Props;
 
-// --- Base Organization node --------------------------------------------------
+// --- Build Organization node (ordered sections) ---
 const orgNode: any = {
   "@type": "Organization",
   "@id": `${org.url}#org`,
@@ -52,18 +48,14 @@ const orgNode: any = {
   }
 };
 
-// 1) ABOUT US
-if (org.description) {
-  orgNode.description = org.description;
-}
+// 1) About Us
+if (org.description) orgNode.description = org.description;
 
-// 2) OUR TEAM (descriptions only)
-if (org.teamNotes && org.teamNotes.length) {
-  orgNode.knowsAbout = org.teamNotes;
-}
+// 2) Our Team (descriptions only)
+if (org.teamNotes?.length) orgNode.knowsAbout = org.teamNotes;
 
-// 3) OUR SERVICES
-if (org.services && org.services.length) {
+// 3) Our Services
+if (org.services?.length) {
   orgNode.makesOffer = org.services.map(svc => ({
     "@type": "Offer",
     "itemOffered": {
@@ -74,13 +66,13 @@ if (org.services && org.services.length) {
   }));
 }
 
-// 4) LOCALIZATION (offices)
-if (org.locations && org.locations.length) {
+// 4) Localization (offices)
+if (org.locations?.length) {
   orgNode.department = org.locations.map(loc => ({
     "@type": "LocalBusiness",
     "name": loc.name,
     ...(loc.email ? { "email": loc.email } : {}),
-    ...(loc.streetAddress || loc.addressLocality || loc.addressCountry
+    ...(loc.streetAddress || loc.addressLocality || loc.addressCountry || loc.postalCode
       ? {
           "address": {
             "@type": "PostalAddress",
@@ -94,22 +86,19 @@ if (org.locations && org.locations.length) {
   }));
 }
 
-// 5) CONTACT US
+// 5) Contact Us
 if (org.contactEmail) {
-  orgNode.contactPoint = [
-    {
-      "@type": "ContactPoint",
-      "email": org.contactEmail,
-      "contactType": "customer support",
-      "availableLanguage": ["en", "fr"]
-    }
-  ];
+  orgNode.contactPoint = [{
+    "@type": "ContactPoint",
+    "email": org.contactEmail,
+    "contactType": "customer support",
+    "availableLanguage": ["en", "fr"]
+  }];
 }
 
-// --- Page node ---------------------------------------------------------------
-const pageType = page.pageType ?? 'WebPage';
+// --- Page node ---
 const pageNode: any = {
-  "@type": pageType,
+  "@type": page.pageType ?? "WebPage",
   "@id": `${page.url}#page`,
   "url": page.url,
   ...(page.name ? { "name": page.name } : {}),
@@ -117,23 +106,23 @@ const pageNode: any = {
   "about": { "@id": `${org.url}#org` }
 };
 
-// --- Optional WebSite node (for sitelinks search box) ------------------------
-const websiteNode: any = includeWebsite
-  ? {
-      "@type": "WebSite",
-      "@id": `${org.url}#website`,
-      "url": org.url,
-      "name": org.name,
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": `${org.url}search?q={search_term_string}`,
-        "query-input": "required name=search_term_string"
-      }
-    }
-  : null;
+// --- Optional WebSite node for sitelinks ---
+const websiteNode: any = includeWebsite ? {
+  "@type": "WebSite",
+  "@id": `${org.url}#website`,
+  "url": org.url,
+  "name": org.name,
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": `${org.url}search?q={search_term_string}`,
+    "query-input": "required name=search_term_string"
+  }
+} : null;
 
-// --- Final graph -------------------------------------------------------------
 const graph = [orgNode, pageNode, ...(websiteNode ? [websiteNode] : [])];
----
 
+// Helper: stable, compact JSON string without escaping in HTML
+const json = JSON.stringify({ "@context": "https://schema.org", "@graph": graph });
+---
+<!-- IMPORTANT: use set:html so Google sees raw JSON, not escaped text -->
 <script type="application/ld+json" set:html={json}></script>
