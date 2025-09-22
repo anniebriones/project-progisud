@@ -136,6 +136,4 @@ const websiteNode: any = includeWebsite
 const graph = [orgNode, pageNode, ...(websiteNode ? [websiteNode] : [])];
 ---
 
-<script type="application/ld+json">
-  {JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}
-</script>
+<script type="application/ld+json" set:html={json}></script>
