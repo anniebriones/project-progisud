@@ -1,9 +1,31 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import SeoSchema from "../components/SeoSchema.astro";
 
 const title = 'Our Team | Progisud'
 const description = 'Progisud is composed exclusively of SENIOR or EXPERT profiles based in France or in our Delivery Center in Manila, Philippines. This allows us to cover time slots on all continents.'
 const image = 'https://progisud-digital-partner.fr/images/progisud-logo.jpg'
+
+const site = 'https://progisud-digital-partner.fr';
+
+const org = {
+  name: "Progisud SAP Integration & Consulting",
+  url: site,
+  logoUrl: "https://progisud-digital-partner.fr/images/progisud.png",
+  contactEmail: "contact@progisud.com",
+  // Our Team (descriptions only)
+  teamNotes: [
+    "Progisud is composed exclusively of SENIOR or EXPERT profiles based in France or in our Delivery Center in Manila, Philippines.",
+    "This allows us to cover time slots on all continents."
+  ]
+};
+
+const page = {
+  url: `${site}/our-team`,
+  pageType: 'CollectionPage',
+  name: title,
+  description
+};
 ---
 
 <BaseLayout {title} {description} {image} lang="en">

@@ -1,13 +1,46 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-
 import WorldMapPins from '../components/WorldMapPins.astro';
+import SeoSchema from "../components/SeoSchema.astro";
 
 const title = 'Localization | Progisud'
 const description = '2 offices in France and Philippines.'
 const image = 'https://progisud-digital-partner.fr/images/progisud-logo.jpg'
+
+const site = 'https://progisud-digital-partner.fr';
+const page = {
+  url: `${site}/localization`,
+  pageType: 'WebPage',
+  name: title,
+  description
+};
+
+const org = {
+  name: "Progisud Digital Partner",
+  url: site,
+  logoUrl: "https://progisud-digital-partner.fr/images/progisud.png",
+  contactEmail: "contact@progisud.com",
+  locations: [
+    {
+      name: "Progisud – Marseille Office",
+      streetAddress: "18 chemin de Mimet",
+      postalCode: "13015",
+      addressLocality: "Marseille",
+      addressCountry: "FR",
+      email: "contact@progisud.com"
+    },
+    {
+      name: "Progisud – Manila Office",
+      streetAddress: "10th Floor, South Tower Rockwell Business Center, Sheridan",
+      addressLocality: "Mandaluyong City",
+      addressCountry: "PH",
+      email: "contact@progisud.com"
+    }
+  ]
+};
 ---
 <BaseLayout {title} {description} {image} lang="en">
+<SeoSchema {org} {page} includeWebsite={true} />
   <!-- Localizations -->
   <section class="w-full bg-white mb-16 py-8 px-8">
     <h2 data-fly class="text-3xl font-bold text-center">Our Locations</h2>

@@ -1,0 +1,141 @@
+---
+interface Org {
+  name?: string;
+  url?: string;
+  logoUrl?: string;     // absolute
+  logoW?: number;
+  logoH?: number;
+  description?: string; // About Us
+  teamNotes?: string[]; // Our Team (descriptions only)
+  services?: { name: string; description?: string }[]; // Our Services
+  locations?: {
+    name: string;
+    streetAddress?: string;
+    postalCode?: string;
+    addressLocality?: string;
+    addressCountry?: string; // ISO code e.g., FR, PH
+    email?: string;
+  }[]; // Localization
+  contactEmail?: string; // Contact Us
+}
+
+interface Page {
+  url: string;        // absolute URL of this page
+  pageType?: 'AboutPage' | 'ContactPage' | 'CollectionPage' | 'WebPage';
+  name?: string;      // page title
+  description?: string;
+}
+
+interface Props {
+  org: Org;
+  page: Page;
+  includeWebsite?: boolean; // add WebSite for sitelinks (on every page is fine)
+}
+
+const {
+  org,
+  page,
+  includeWebsite = true
+} = Astro.props as { org: Org; page: Page; includeWebsite?: boolean };
+
+// --- Base Organization node --------------------------------------------------
+const orgNode: any = {
+  "@type": "Organization",
+  "@id": `${org.url}#org`,
+  "name": org.name,
+  "url": org.url,
+  "logo": {
+    "@type": "ImageObject",
+    "url": org.logoUrl,
+    "width": org.logoW ?? 512,
+    "height": org.logoH ?? 512
+  }
+};
+
+// 1) ABOUT US
+if (org.description) {
+  orgNode.description = org.description;
+}
+
+// 2) OUR TEAM (descriptions only)
+if (org.teamNotes && org.teamNotes.length) {
+  orgNode.knowsAbout = org.teamNotes;
+}
+
+// 3) OUR SERVICES
+if (org.services && org.services.length) {
+  orgNode.makesOffer = org.services.map(svc => ({
+    "@type": "Offer",
+    "itemOffered": {
+      "@type": "Service",
+      "name": svc.name,
+      ...(svc.description ? { "description": svc.description } : {})
+    }
+  }));
+}
+
+// 4) LOCALIZATION (offices)
+if (org.locations && org.locations.length) {
+  orgNode.department = org.locations.map(loc => ({
+    "@type": "LocalBusiness",
+    "name": loc.name,
+    ...(loc.email ? { "email": loc.email } : {}),
+    ...(loc.streetAddress || loc.addressLocality || loc.addressCountry
+      ? {
+          "address": {
+            "@type": "PostalAddress",
+            ...(loc.streetAddress ? { "streetAddress": loc.streetAddress } : {}),
+            ...(loc.postalCode ? { "postalCode": loc.postalCode } : {}),
+            ...(loc.addressLocality ? { "addressLocality": loc.addressLocality } : {}),
+            ...(loc.addressCountry ? { "addressCountry": loc.addressCountry } : {})
+          }
+        }
+      : {})
+  }));
+}
+
+// 5) CONTACT US
+if (org.contactEmail) {
+  orgNode.contactPoint = [
+    {
+      "@type": "ContactPoint",
+      "email": org.contactEmail,
+      "contactType": "customer support",
+      "availableLanguage": ["en", "fr"]
+    }
+  ];
+}
+
+// --- Page node ---------------------------------------------------------------
+const pageType = page.pageType ?? 'WebPage';
+const pageNode: any = {
+  "@type": pageType,
+  "@id": `${page.url}#page`,
+  "url": page.url,
+  ...(page.name ? { "name": page.name } : {}),
+  ...(page.description ? { "description": page.description } : {}),
+  "about": { "@id": `${org.url}#org` }
+};
+
+// --- Optional WebSite node (for sitelinks search box) ------------------------
+const websiteNode: any = includeWebsite
+  ? {
+      "@type": "WebSite",
+      "@id": `${org.url}#website`,
+      "url": org.url,
+      "name": org.name,
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": `${org.url}search?q={search_term_string}`,
+        "query-input": "required name=search_term_string"
+      }
+    }
+  : null;
+
+// --- Final graph -------------------------------------------------------------
+const graph = [orgNode, pageNode, ...(websiteNode ? [websiteNode] : [])];
+---
+
+<script type="application/ld+json">
+  {JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}
+</script>

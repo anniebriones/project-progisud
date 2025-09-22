@@ -4,11 +4,10 @@ import Footer from "../components/Footer.astro";
 // import Analytics from '../components/Analytics.astro';
 import SeoHead from '../components/SeoHead.astro';
 
-// Props
 export interface Props {
   title?: string;
   description?: string;
-  image?: string;                  // can be "/path.jpg" or full URL
+  image?: string; // can be "/path.jpg" or full URL
   type?: 'website' | 'article';
   lang?: string;
   noIndex?: boolean;
@@ -17,13 +16,12 @@ export interface Props {
 const {
   title = "Progisud SAP Integration & Consulting services",
   description = "Progisud is a SAP Tech Start-up, working on modern solutions like SAP PUBLIC CLOUD, Business AI, BTP Technologies… and expanding our expertise to the entire IT transformation.",
-  image = "/images/progisud-logo.jpg", // will be converted to absolute below
+  image = "/images/progisud-card.jpg",
   type = "website",
   lang = "en",
   noIndex = false
 } = Astro.props as Props;
 
-// --- Site & helpers ---
 const site =
   import.meta.env.PUBLIC_SITE_URL ||
   Astro.site?.toString() ||
@@ -32,18 +30,15 @@ const site =
 const abs = (p: string) => new URL(p, site).toString();
 const resolvedImage = image?.startsWith('http') ? image : abs(image);
 
-// --- Hreflang (EN <-> FR) ---
+// Canonical for this path (normalize trailing slash if you use them)
+const canonical = new URL(Astro.url.pathname || '/', site).toString();
+
+// Hreflang (EN <-> FR)
 const currentPath = Astro.url.pathname;
-
-// Strip a leading "/fr" if present (first segment only)
 const basePath = currentPath.replace(/^\/fr(?=\/|$)/, '') || '/';
-
-// Build absolute EN/FR URLs
 const enUrl = abs(basePath);
 const frUrl = abs(basePath === '/' ? '/fr/' : `/fr${basePath}`);
 
-// OPTIONAL: Only output hreflang for routes that actually have FR pages live.
-// Add/remove paths here as you publish more FR pages.
 const translated = new Set<string>(['/', '/our-services', '/our-team', '/localization', '/contact-us']);
 const showHreflang = translated.has(basePath);
 ---
@@ -54,14 +49,32 @@ const showHreflang = translated.has(basePath);
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Centralized SEO head (title/description/OG/Twitter).
-         Pass resolvedImage to guarantee absolute URLs for social cards. -->
-    <SeoHead {title} {description} image={resolvedImage} {type} lang={lang} />
-
     <!-- Robots -->
     <meta name="robots" content={noIndex ? "noindex,nofollow" : "index,follow"} />
 
-    <!-- Hreflang alternates (emit only if FR counterpart exists) -->
+    <!-- Favicons / PWA -->
+    <link rel="icon" href="/images/progisud.jpg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/progisud.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/progisud.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/progisud.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Centralized SEO head -->
+    <SeoHead
+      {title}
+      {description}
+      image={resolvedImage}
+      {type}
+      {lang}
+      canonical={canonical}
+      siteName="Progisud"
+      twitterSite="@progisud"
+      imageWidth={1200}
+      imageHeight={630}
+      imageAlt="Progisud – SAP Integration & Consulting"
+    />
+
+    <!-- Hreflang -->
     {showHreflang && (
       <>
         <link rel="alternate" hreflang="en" href={enUrl} />
@@ -70,20 +83,25 @@ const showHreflang = translated.has(basePath);
       </>
     )}
 
-    <!-- Favicons / fonts -->
-    <link rel="icon" href="/images/progisud-logo.jpg" />
+    <!-- Fonts -->
     <link rel="stylesheet" href="/fonts/inter.css" />
 
-    <!-- JSON-LD (hardcoded, validated) -->
+    <!-- JSON-LD -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "Progisud",
       "url": "https://progisud-digital-partner.fr",
-      "logo": "https://progisud-digital-partner.fr/logo-512x512.png"
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://progisud-digital-partner.fr/progisud.png",
+        "width": 512,
+        "height": 512
+      }
     }
     </script>
+
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -104,9 +122,6 @@ const showHreflang = translated.has(basePath);
       <slot />
     </main>
     <Footer />
-
-    {/*
-    <Analytics />
-    */}
+    {/* <Analytics /> */}
   </body>
 </html>

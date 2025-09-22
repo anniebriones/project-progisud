@@ -2,9 +2,15 @@
 interface Props {
   title?: string;
   description?: string;
-  image?: string;
+  image?: string; // absolute
   type?: 'website' | 'article';
-  lang?: string;
+  lang?: string;  // e.g., 'en'
+  canonical?: string; // absolute canonical passed from layout
+  siteName?: string;  // for og:site_name
+  twitterSite?: string; // @progisud (optional)
+  imageWidth?: number;
+  imageHeight?: number;
+  imageAlt?: string;
 }
 
 const {
@@ -13,31 +19,37 @@ const {
   image = 'https://progisud-digital-partner.fr/images/progisud-logo.jpg',
   type = 'website',
   lang = 'en',
+  canonical,
+  siteName = 'Progisud',
+  twitterSite = '@progisud',
+  imageWidth = 1200,
+  imageHeight = 630,
+  imageAlt = 'Progisud – SAP Integration & Consulting'
 } = Astro.props;
-
-const canonical = Astro.site
-  ? new URL(Astro.url.pathname, Astro.site).toString()
-  : undefined;
 ---
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <title>{title}</title>
-  <meta name="description" content={description} />
+<!-- Title & basic -->
+<title>{title}</title>
+<meta name="description" content={description} />
 
-  {canonical && <link rel="canonical" href={canonical} />}
+{canonical && <link rel="canonical" href={canonical} />}
 
-  <!-- Open Graph -->
-  <meta property="og:type" content={type} />
-  <meta property="og:title" content={title} />
-  <meta property="og:description" content={description} />
-  <meta property="og:url" content={canonical} />
-  <meta property="og:image" content={image} />
+<!-- Open Graph -->
+<meta property="og:type" content={type} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{canonical && <meta property="og:url" content={canonical} />}
+<meta property="og:image" content={image} />
+<meta property="og:image:width" content={String(imageWidth)} />
+<meta property="og:image:height" content={String(imageHeight)} />
+<meta property="og:image:alt" content={imageAlt} />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:locale" content={lang === 'fr' ? 'fr_FR' : 'en_US'} />
 
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content={title} />
-  <meta name="twitter:description" content={description} />
-  <meta name="twitter:image" content={image} />
-</head>
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content={twitterSite} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={image} />
+<meta name="twitter:image:alt" content={imageAlt} />
