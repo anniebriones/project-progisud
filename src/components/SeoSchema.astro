@@ -29,10 +29,9 @@ interface Page {
 interface Props {
   org: Org;
   page: Page;
-  includeWebsite?: boolean;
 }
 
-const { org, page, includeWebsite = true } = Astro.props as Props;
+const { org, page } = Astro.props as Props;
 
 // --- Build Organization node (ordered sections) ---
 const orgNode: any = {
@@ -48,14 +47,9 @@ const orgNode: any = {
   }
 };
 
-// 1) About Us
-if (org.description) orgNode.description = org.description;
-
-// 2) Our Team (descriptions only)
-if (org.teamNotes?.length) orgNode.knowsAbout = org.teamNotes;
-
-// 3) Our Services
-if (org.services?.length) {
+if (org.description) orgNode.description = org.description;         // About Us
+if (org.teamNotes?.length) orgNode.knowsAbout = org.teamNotes;      // Our Team
+if (org.services?.length) {                                         // Our Services
   orgNode.makesOffer = org.services.map(svc => ({
     "@type": "Offer",
     "itemOffered": {
@@ -65,9 +59,7 @@ if (org.services?.length) {
     }
   }));
 }
-
-// 4) Localization (offices)
-if (org.locations?.length) {
+if (org.locations?.length) {                                        // Localization
   orgNode.department = org.locations.map(loc => ({
     "@type": "LocalBusiness",
     "name": loc.name,
@@ -85,9 +77,7 @@ if (org.locations?.length) {
       : {})
   }));
 }
-
-// 5) Contact Us
-if (org.contactEmail) {
+if (org.contactEmail) {                                             // Contact Us
   orgNode.contactPoint = [{
     "@type": "ContactPoint",
     "email": org.contactEmail,
@@ -106,23 +96,7 @@ const pageNode: any = {
   "about": { "@id": `${org.url}#org` }
 };
 
-// --- Optional WebSite node for sitelinks ---
-const websiteNode: any = includeWebsite ? {
-  "@type": "WebSite",
-  "@id": `${org.url}#website`,
-  "url": org.url,
-  "name": org.name,
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": `${org.url}search?q={search_term_string}`,
-    "query-input": "required name=search_term_string"
-  }
-} : null;
-
-const graph = [orgNode, pageNode, ...(websiteNode ? [websiteNode] : [])];
-
-// Helper: stable, compact JSON string without escaping in HTML
+const graph = [orgNode, pageNode];
 const json = JSON.stringify({ "@context": "https://schema.org", "@graph": graph });
 ---
-<!-- IMPORTANT: use set:html so Google sees raw JSON, not escaped text -->
 <script type="application/ld+json" set:html={json}></script>

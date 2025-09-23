@@ -5,7 +5,7 @@ export const en = {
     title: 'Progisud — SAP Integration & Consulting Services',
     description:
       'Progisud is an SAP tech start-up delivering modern solutions such as SAP Public Cloud, Business AI, and BTP technologies—supporting end-to-end IT transformation.',
-    image: `${site}/og-home-en.jpg`,
+    image: `${site}/images/progisud.png`,
     headings: {
       about: 'About Us',
       aboutBlurb:
@@ -27,7 +27,7 @@ export const fr = {
     title: 'Progisud — Expertise et conseil métier sur SAP',
     description:
       'Progisud est une start-up tech spécialisée sur SAP, proposant des solutions modernes telles que SAP Public Cloud, Business AI et les technologies BTP, et couvrant l’ensemble de la transformation informatique.',
-    image: `${site}/og-home-fr.jpg`,
+    image: `${site}/images/progisud.png`,
     headings: {
       about: 'À propos',
       aboutBlurb:
