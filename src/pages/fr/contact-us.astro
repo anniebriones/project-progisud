@@ -5,25 +5,9 @@ import SeoSchema from "../../components/SeoSchema.astro";
 const title = 'Contact Us | Progisud'
 const description = 'Get in touch with Progisud for SAP integration and consulting services.'
 const image = 'https://progisud-digital-partner.fr/images/progisud-logo.jpg'
-
-const site = 'https://progisud-digital-partner.fr/';
-const page = {
-  url: `${site}/contact-us`,
-  pageType: 'ContactPage',
-  name: title,
-  description
-};
-
-const org = {
-  name: "Progisud Digital Partner",
-  url: site,
-  logoUrl: "https://progisud-digital-partner.fr/images/progisud.png",
-  contactEmail: "contact@progisud.com"
-};
 ---
 
 <BaseLayout title="Contactez-nous" description="Get in touch" lang="en">
-<SeoSchema {org} {page} />
   <h1 class="text-3xl font-bold">Contactez-nous</h1>
   <p class="mt-4">Envoyez un message à notre équipe pour voir comment nous pouvons vous aider</p>
 

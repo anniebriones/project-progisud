@@ -5,29 +5,8 @@ import SeoSchema from "../components/SeoSchema.astro";
 const title = 'Our Services | Progisud'
 const description = 'Your SAP Partner for Navigating Digital Excellence with innovative SAP services.'
 const image = 'https://progisud-digital-partner.fr/images/progisud-logo.jpg'
-
-const site = 'https://progisud-digital-partner.fr';
-const page = {
-  url: `${site}/our-services`,
-  pageType: 'CollectionPage',
-  name: title,
-  description
-};
-
-const org = {
-  name: "Progisud Digital Partner",
-  url: site,
-  logoUrl: "https://progisud-digital-partner.fr/images/progisud.png",
-  contactEmail: "contact@progisud.com",
-  services: [
-    { name: "SAP S/4HANA Cloud Implementation", description: "End-to-end implementation and migration for SAP S/4HANA Cloud." },
-    { name: "SAP Business Technology Platform (BTP)", description: "Extensions, integrations, and AI apps on BTP." },
-    { name: "SAP Integration & Consulting", description: "Advisory and delivery for SAP PUBLIC CLOUD and Finance." }
-  ]
-};
 ---
 <BaseLayout {title} {description} {image} lang="en">
-<SeoSchema {org} {page} />
   <!-- HERO -->
   <section class="relative h-[28rem] overflow-hidden">
     <!-- Static background image -->

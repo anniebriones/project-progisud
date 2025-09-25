@@ -5,30 +5,8 @@ import SeoSchema from "../../components/SeoSchema.astro";
 const title = 'Notre équipe'
 const description = 'Progisud est composé exclusivement de profils SENIOR ou EXPERT basés en France ou dans notre  CDelivery Center  à Manille, aux Philippines. Cela nous permet de couvrir tous les fuseaux horaires sur tous les continents.'
 const image = 'https://progisud-digital-partner.fr/images/progisud-logo.jpg'
-
-const site = 'https://progisud-digital-partner.fr/';
-
-const org = {
-  name: "Progisud Digital Partner",
-  url: site,
-  logoUrl: "https://progisud-digital-partner.fr/images/progisud.png",
-  contactEmail: "contact@progisud.com",
-  // Our Team (descriptions only)
-  teamNotes: [
-    "Progisud is composed exclusively of SENIOR or EXPERT profiles based in France or in our Delivery Center in Manila, Philippines.",
-    "This allows us to cover time slots on all continents."
-  ]
-};
-
-const page = {
-  url: `${site}/our-team`,
-  pageType: 'CollectionPage',
-  name: title,
-  description
-};
 ---
 <BaseLayout {title} {description} {image} lang="fr">
-<SeoSchema {org} {page} />
   <section class="w-full bg-gray-50 py-16">
     <div class="container mx-auto flex flex-col md:flex-row items-center md:items-start gap-12 px-6">
       

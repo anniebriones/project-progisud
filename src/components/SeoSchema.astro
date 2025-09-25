@@ -1,102 +1,133 @@
 ---
-interface Org {
-  name?: string;
-  url?: string;
-  logoUrl?: string;
-  logoW?: number;
-  logoH?: number;
-  description?: string;        // About Us
-  teamNotes?: string[];        // Our Team (descriptions)
-  services?: { name: string; description?: string }[]; // Our Services
-  locations?: {
-    name: string;
-    streetAddress?: string;
-    postalCode?: string;
-    addressLocality?: string;
-    addressCountry?: string;   // ISO: FR, PH, etc.
-    email?: string;
-  }[];                          // Localization
-  contactEmail?: string;        // Contact Us
-}
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import SeoHead from "../components/SeoHead.astro";
+import SeoSchema from "../components/SeoSchema.astro";
 
-interface Page {
-  url: string;                  // absolute
-  pageType?: 'AboutPage' | 'ContactPage' | 'CollectionPage' | 'WebPage';
-  name?: string;
+export interface Props {
+  title?: string;
   description?: string;
+  image?: string;               // can be "/path.jpg" or full URL
+  type?: 'website' | 'article';
+  lang?: 'en' | 'fr';
+  noIndex?: boolean;
 }
 
-interface Props {
-  org: Org;
-  page: Page;
-}
+const {
+  title = "Progisud Digital Partner",
+  description = "Progisud is a SAP Tech Start-up, working on modern solutions like SAP PUBLIC CLOUD, Business AI, BTP Technologies… and expanding our expertise to the entire IT transformation.",
+  image = "/images/progisud.png",   // default social image; use your OG if you like
+  type = "website",
+  lang = "en",
+  noIndex = false
+} = Astro.props as Props;
 
-const { org, page } = Astro.props as Props;
+// ---- Site/base helpers ----
+const site =
+  import.meta.env.PUBLIC_SITE_URL ||
+  Astro.site?.toString() ||
+  "https://progisud-digital-partner.fr";
 
-// --- Build Organization node (ordered sections) ---
-const orgNode: any = {
-  "@type": "Organization",
-  "@id": `${org.url}#org`,
-  "name": org.name,
-  "url": org.url,
-  "logo": {
-    "@type": "ImageObject",
-    "url": org.logoUrl,
-    "width": org.logoW ?? 512,
-    "height": org.logoH ?? 512
-  }
+const abs = (p: string) => new URL(p, site).toString();
+const resolvedImage = image?.startsWith("http") ? image : abs(image);
+
+// ---- Canonical for this route ----
+const canonical = new URL(Astro.url.pathname || "/", site).toString();
+
+// ---- Hreflang (EN <-> FR) ----
+// Remove leading /fr for basePath detection
+const currentPath = Astro.url.pathname;
+const basePath = currentPath.replace(/^\/fr(?=\/|$)/, "") || "/";
+
+// Build absolute EN/FR URLs
+const enUrl = abs(basePath);
+const frUrl = abs(basePath === "/" ? "/fr/" : `/fr${basePath}`);
+
+// Emit hreflang only for routes that have a live FR counterpart:
+const translated = new Set<string>(["/", "/our-services", "/our-team", "/localization", "/contact-us"]);
+const showHreflang = translated.has(basePath);
+
+// ---- SeoSchema props (single source of truth for JSON-LD) ----
+// NOTE: Tweak pageType per page if you pass it via page files; here we infer basic types:
+const inferredPageType =
+  basePath === "/" ? "AboutPage" :
+  basePath === "/contact-us" ? "ContactPage" :
+  basePath === "/our-team" ? "CollectionPage" :
+  basePath === "/our-services" ? "WebPage" :
+  basePath === "/localization" ? "CollectionPage" :
+  "WebPage";
+
+const org = {
+  name: "Progisud",
+  url: site,
+  logoUrl: abs("/images/progisud.png"),
+  description,
+  contactEmail: "contact@progisud.com"
 };
 
-if (org.description) orgNode.description = org.description;         // About Us
-if (org.teamNotes?.length) orgNode.knowsAbout = org.teamNotes;      // Our Team
-if (org.services?.length) {                                         // Our Services
-  orgNode.makesOffer = org.services.map(svc => ({
-    "@type": "Offer",
-    "itemOffered": {
-      "@type": "Service",
-      "name": svc.name,
-      ...(svc.description ? { "description": svc.description } : {})
-    }
-  }));
-}
-if (org.locations?.length) {                                        // Localization
-  orgNode.department = org.locations.map(loc => ({
-    "@type": "LocalBusiness",
-    "name": loc.name,
-    ...(loc.email ? { "email": loc.email } : {}),
-    ...(loc.streetAddress || loc.addressLocality || loc.addressCountry || loc.postalCode
-      ? {
-          "address": {
-            "@type": "PostalAddress",
-            ...(loc.streetAddress ? { "streetAddress": loc.streetAddress } : {}),
-            ...(loc.postalCode ? { "postalCode": loc.postalCode } : {}),
-            ...(loc.addressLocality ? { "addressLocality": loc.addressLocality } : {}),
-            ...(loc.addressCountry ? { "addressCountry": loc.addressCountry } : {})
-          }
-        }
-      : {})
-  }));
-}
-if (org.contactEmail) {                                             // Contact Us
-  orgNode.contactPoint = [{
-    "@type": "ContactPoint",
-    "email": org.contactEmail,
-    "contactType": "customer support",
-    "availableLanguage": ["en", "fr"]
-  }];
-}
-
-// --- Page node ---
-const pageNode: any = {
-  "@type": page.pageType ?? "WebPage",
-  "@id": `${page.url}#page`,
-  "url": page.url,
-  ...(page.name ? { "name": page.name } : {}),
-  ...(page.description ? { "description": page.description } : {}),
-  "about": { "@id": `${org.url}#org` }
+const page = {
+  url: canonical,
+  pageType: inferredPageType as "AboutPage" | "ContactPage" | "CollectionPage" | "WebPage",
+  name: title,
+  description
 };
-
-const graph = [orgNode, pageNode];
-const json = JSON.stringify({ "@context": "https://schema.org", "@graph": graph });
 ---
-<script type="application/ld+json" set:html={json}></script>
+
+<!doctype html>
+<html lang={lang} class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content={noIndex ? "noindex,nofollow" : "index,follow"} />
+
+    <!-- Favicons (replace paths as needed) -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Centralized SEO meta -->
+    <SeoHead
+      {title}
+      {description}
+      image={resolvedImage}
+      {type}
+      {lang}
+      canonical={canonical}
+      siteName="Progisud"
+      twitterSite="@progisud"
+      imageWidth={1200}
+      imageHeight={630}
+      imageAlt="Progisud – SAP Integration & Consulting"
+    />
+
+    <!-- Hreflang alternates -->
+    {showHreflang && (
+      <>
+        <link rel="alternate" hreflang="en" href={enUrl} />
+        <link rel="alternate" hreflang="fr" href={frUrl} />
+        <link rel="alternate" hreflang="x-default" href={enUrl} />
+      </>
+    )}
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="/fonts/inter.css" />
+
+    <!-- Structured data (single source of truth; removes duplication) -->
+    <SeoSchema {org} {page} includeWebsite={false} />
+    {/*
+      If you actually have a /search endpoint and want sitelinks search box,
+      set includeWebsite={true}. Otherwise keep false to stay minimal.
+    */}
+  </head>
+
+  <body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
+    <Header lang={lang} />
+    <main class="mx-auto max-w-6xl px-4 pt-10 pb-0">
+      <slot />
+    </main>
+    <Footer />
+    {/* <Analytics /> */}
+  </body>
+</html>

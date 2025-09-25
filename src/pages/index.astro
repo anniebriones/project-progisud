@@ -1,8 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Hreflang from '~/components/Hreflang.astro';
-import SeoSchema from "../components/SeoSchema.astro";
 
+// Optional: local assets used by the hero/sections
 const images = [
   "/images/about/01.png",
   "/images/about/02.png",
@@ -12,73 +11,18 @@ const images = [
   "/images/about/02.png"
 ];
 
-const title = 'Progisud Digital Partner'
-const description = 'Progisud is a SAP Tech Start-up, working on modern solutions like SAP PUBLIC CLOUD, Business AI, BTP Technologies and expanding our expertise to the entire IT transformation.'
-const image = 'https://progisud-digital-partner.fr/images/progisud-logo.jpg'
+const title = "Progisud Digital Partner";
+const description =
+  "Progisud is a SAP Tech Start-up, working on modern solutions like SAP PUBLIC CLOUD, Business AI, BTP Technologies and expanding our expertise to the entire IT transformation.";
+
+// Use your square PNG or a proper OG image (absolute URL recommended)
+const image = "https://progisud-digital-partner.fr/images/progisud.png";
 
 const perSlideSec = 4;     // seconds each slide is shown
 const transitionMs = 600;  // slide animation duration (ms)
-
-const site = 'https://progisud-digital-partner.fr';
-const pageUrl = `${site}/`;
-
-const org = {
-  name: "Progisud Digital Partner",
-  url: site,
-  logoUrl: "https://progisud-digital-partner.fr/images/progisud.png",
-  logoW: 512,
-  logoH: 512,
-
-  // 1) About Us
-  description,
-
-  // 2) Our Team (descriptions only)
-  teamNotes: [
-    "Progisud is composed exclusively of SENIOR or EXPERT profiles based in France or in our Delivery Center in Manila, Philippines.",
-    "This allows us to cover time slots on all continents."
-  ],
-
-  // 3) Our Services
-  services: [
-    { name: "SAP S/4HANA Cloud Implementation", description: "End-to-end implementation and migration for SAP S/4HANA Cloud Public and Private editions." },
-    { name: "SAP Business Technology Platform (BTP)", description: "Custom extensions, integrations, and AI-driven apps on SAP BTP." },
-    { name: "SAP Integration & Consulting", description: "Consulting for SAP PUBLIC CLOUD, Finance, and third-party integrations." }
-  ],
-
-  // 4) Localization (offices)
-  locations: [
-    {
-      name: "Progisud – Marseille Office",
-      streetAddress: "18 chemin de Mimet",
-      postalCode: "13015",
-      addressLocality: "Marseille",
-      addressCountry: "FR",
-      email: "contact@progisud.com"
-    },
-    {
-      name: "Progisud – Manila Office",
-      streetAddress: "10th Floor, South Tower Rockwell Business Center, Sheridan",
-      addressLocality: "Mandaluyong City",
-      addressCountry: "PH",
-      email: "contact@progisud.com"
-    }
-  ],
-
-  // 5) Contact Us
-  contactEmail: "contact@progisud.com"
-};
-
-const page = {
-  url: pageUrl,
-  pageType: 'AboutPage',
-  name: 'About Us | Progisud',
-  description
-};
 ---
 
 <BaseLayout {title} {description} {image} lang="en">
-<SeoSchema {org} {page} />
-
   <section class="relative h-[28rem] overflow-hidden">
     <!-- Static background image -->
     <img
